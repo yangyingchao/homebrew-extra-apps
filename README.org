@@ -12,3 +12,7 @@
 #+DESCRIPTION: (nil)
 
 Extra packages for homebrew.
+
+* Emacs Plus
+
+Ported from: https://github.com/yangyingchao/homebrew-emacs-plus
