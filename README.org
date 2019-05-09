@@ -13,6 +13,14 @@
 
 Extra packages for homebrew.
 
-* Emacs Plus
+* Usage
+#+BEGIN_SRC sh -r
+brew tap yangyingchao/brew-plus
+brew install xxxx
+#+END_SRC
 
-Ported from: https://github.com/yangyingchao/homebrew-emacs-plus
+
+* Available Apps
+
+** Emacs Plus
+Ported from: https://github.com/d12frosted/homebrew-emacs-plus
