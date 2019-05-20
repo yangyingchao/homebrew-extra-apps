@@ -15,8 +15,8 @@ Extra packages for homebrew.
 
 * Usage
 #+BEGIN_SRC sh -r
-brew tap yangyingchao/brew-plus
-brew install xxxx
+brew tap yangyingchao/extra-apps
+brew cask install xxxx
 #+END_SRC
 
 
