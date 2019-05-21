@@ -5,13 +5,6 @@ class EmacsPlus < Formula
   mirror "https://ftpmirror.gnu.org/emacs/emacs-26.2.tar.xz"
   sha256 "151ce69dbe5b809d4492ffae4a4b153b2778459de6deb26f35691e1281a9c58e"
 
-  bottle do
-    root_url "https://dl.bintray.com/d12frosted/emacs-plus"
-    rebuild 2
-    sha256 "1fce8aa4bef48f557298e67821327b4d7ea4cdbb2f27cb82edb6bcd882a0d332" => :mojave
-    sha256 "dc63557c1802744351bfa639bde1ae2aee13d41d785ceaa8641a19cd30e67728" => :high_sierra
-  end
-
   # Opt-out
   option "without-cocoa",
          "Build a non-Cocoa version of Emacs"
@@ -19,47 +12,15 @@ class EmacsPlus < Formula
          "Build without libxml2 support"
   option "without-modules",
          "Build without dynamic modules support"
-  option "without-spacemacs-icon",
-         "Build without Spacemacs icon by Nasser Alshammari"
-  option "without-multicolor-fonts",
-         "Build without a patch that enables multicolor font support"
 
   # Opt-in
   option "with-ctags",
          "Don't remove the ctags executable that Emacs provides"
 
-  # Update list from
-  # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
-  #
-  # code taken from emacs-mac formula
-  emacs_icons_project_icons = {
-    "EmacsIcon1" => "50dbaf2f6d67d7050d63d987fe3743156b44556ab42e6d9eee92248c56011bd0",
-    "EmacsIcon2" => "8d63589b0302a67f13ab94b91683a8ad7c2b9e880eabe008056a246a22592963",
-    "EmacsIcon3" => "80dd2a4776739a081e0a42008e8444c729d41ba876b19fa9d33fde98ee3e0ebf",
-    "EmacsIcon4" => "8ce646ca895abe7f45029f8ff8f5eac7ab76713203e246b70dea1b8a21a6c135",
-    "EmacsIcon5" => "ca415df7ad60b0dc495626b0593d3e975b5f24397ad0f3d802455c3f8a3bd778",
-    "EmacsIcon6" => "12a1999eb006abac11535b7fe4299ebb3c8e468360faf074eb8f0e5dec1ac6b0",
-    "EmacsIcon7" => "f5067132ea12b253fb4a3ea924c75352af28793dcf40b3063bea01af9b2bd78c",
-    "EmacsIcon8" => "d330b15cec1bcdfb8a1e8f8913d8680f5328d59486596fc0a9439b54eba340a0",
-    "EmacsIcon9" => "f58f46e5ef109fff8adb963a97aea4d1b99ca09265597f07ee95bf9d1ed4472e",
-    "emacs-card-blue-deep" => "6bdb17418d2c620cf4132835cfa18dcc459a7df6ce51c922cece3c7782b3b0f9",
-    "emacs-card-british-racing-green" => "ddf0dff6a958e3b6b74e6371f1a68c2223b21e75200be6b4ac6f0bd94b83e1a5",
-    "emacs-card-carmine" => "4d34f2f1ce397d899c2c302f2ada917badde049c36123579dd6bb99b73ebd7f9",
-    "emacs-card-green" => "f94ade7686418073f04b73937f34a1108786400527ed109af822d61b303048f7",
-  }
-
-  emacs_icons_project_icons.keys.each do |icon|
-    option "with-emacs-icons-project-#{icon}", "Using Emacs icon project #{icon}"
-  end
-
-  option "with-modern-icon", "Using a modern style Emacs icon by @tpanum"
-
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
 
   # Emacs 26.x and Emacs 27.x experimental stuff
   option "with-x11", "Experimental: build with x11 support"
-  option "with-no-titlebar", "Experimental: build without titlebar"
-  deprecated_option "with-no-title-bars" => "with-no-titlebar"
 
   # Emacs 27.x only
   option "with-pdumper",
@@ -125,26 +86,6 @@ class EmacsPlus < Formula
     depends_on "fontconfig" => :recommended
   end
 
-  if build.with? "no-titlebar"
-    if build.head?
-      odie "--with-no-titlebar is not supported on --HEAD yet"
-    end
-
-    patch do
-      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
-      sha256 "2059213cc740a49b131a363d6093913fa29f8f67227fc86a82ffe633bbf1a5f5"
-    end
-  end
-
-  if build.with? "multicolor-fonts"
-    unless build.head?
-      patch do
-        url "https://gist.githubusercontent.com/aatxe/260261daf70865fbf1749095de9172c5/raw/214b50c62450be1cbee9f11cecba846dd66c7d06/patch-multicolor-font.diff"
-        sha256 "5af2587e986db70999d1a791fca58df027ccbabd75f45e4a2af1602c75511a8c"
-      end
-    end
-  end
-
   if build.with? "xwidgets"
     unless build.head?
       odie "--with-xwidgets is supported only on --HEAD"
@@ -162,23 +103,6 @@ class EmacsPlus < Formula
     patch do
       url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/no-frame-refocus-cocoa.patch"
       sha256 "abe68896ab1043dbdf17830af4ff3b83667412a0bddb1cfe04cfaae5e83e41ca"
-    end
-  end
-
-  resource "modern-icon" do
-    url "https://s3.amazonaws.com/emacs-mac-port/Emacs.icns.modern"
-    sha256 "eb819de2380d3e473329a4a5813fa1b4912ec284146c94f28bd24fbb79f8b2c5"
-  end
-
-  resource "spacemacs-icon" do
-    url "https://github.com/nashamri/spacemacs-logo/blob/master/spacemacs.icns?raw=true"
-    sha256 "b3db8b7cfa4bc5bce24bc4dc1ede3b752c7186c7b54c09994eab5ec4eaa48900"
-  end
-
-  emacs_icons_project_icons.each do |icon, sha|
-    resource "emacs-icons-project-#{icon}" do
-      url "https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/#{icon}.icns"
-      sha256 sha
     end
   end
 
@@ -264,19 +188,6 @@ class EmacsPlus < Formula
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
 
-      (%w[EmacsIcon1 EmacsIcon2 EmacsIcon3 EmacsIcon4
-        EmacsIcon5 EmacsIcon6 EmacsIcon7 EmacsIcon8
-        EmacsIcon9 emacs-card-blue-deep emacs-card-british-racing-green
-        emacs-card-carmine emacs-card-green].map { |i| "emacs-icons-project-#{i}" } +
-       %w[modern-icon spacemacs-icon]).each do |icon|
-        next if build.without? icon
-
-        rm "#{icons_dir}/Emacs.icns"
-        resource(icon).stage do
-          icons_dir.install Dir["*.icns*"].first => "Emacs.icns"
-        end
-      end
-
       prefix.install "nextstep/Emacs.app"
 
       # Replace the symlink with one that avoids starting Cocoa.
@@ -285,6 +196,121 @@ class EmacsPlus < Formula
         #!/bin/bash
         exec #{prefix}/Emacs.app/Contents/MacOS/Emacs "$@"
       EOS
+
+      (bin/"run-emacs").write <<~EOS
+#!/bin/bash
+
+EMACS=/usr/local/bin/emacs
+EMACSCLIENT=/usr/local/bin/emacsclient
+
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export LC_CTYPE=zh_CN.UTF-8
+export LC_ALL=
+
+ARCH=`uname`
+
+
+if [ ! -f $EMACS ]; then
+    echo "Can't find proper executable emacs..."
+    exit 1
+fi
+
+_is_emacs_daemon_started () {
+    netstat -nl 2> /dev/null | awk '{print $NF}' | grep -q "emacs.*server"
+}
+
+_is_emacs_window_exist () {
+    _is_emacs_daemon_started && \
+        $EMACSCLIENT -e '(<= 2 (length (visible-frame-list)))' | grep -q -x t
+}
+
+_raise_emacs() {
+    if [ $ARCH = 'Linux' ]; then
+        which wmctrl > /dev/null 2>&1 && wmctrl -xa "emacs.Emacs"
+    elif [ $ARCH = 'Darwin' ]; then
+        osascript -e 'tell application "Emacs" to activate'
+    else
+        echo "Unsupported platform"
+    fi
+}
+
+start_emacs ()
+{
+    $EMACS --daemon
+    return $?
+}
+
+main () {
+    _is_emacs_daemon_started
+    if [ $? -ne 0 ] ; then
+        start_emacs
+        if [ $? -eq 0 ]; then
+            echo ' [sucess]'
+        else
+            echo ' [faild]'
+            return 1
+        fi
+    fi
+
+    while [ 1 ]; do
+        _is_emacs_daemon_started
+        if [ $? -ne 0 ]; then
+            echo "Waiting emacs to be started..."
+            sleep 1
+        else
+            break
+        fi
+    done
+
+    # Simply return if --daemon is set. This is only used by systemd.
+    if [ "$1" = "--daemon" ]; then
+        return 0
+    fi
+
+    # Get arguments passed to emacsclient.
+    local args=""
+    while getopts tnc var; do
+        case $var in
+            t)
+                args="-t";;
+            n)
+                args="-n";;
+            c)
+                args="-c";;
+            *)
+                printf "Usage: %s [-t/-n] [-c] file:line" $0
+                ;;
+        esac
+    done
+    shift $(($OPTIND - 1))
+
+    if [ -z "$args" ]; then
+        if [ "$ARCH" = 'Linux' ]; then
+            if [ -z $DISPLAY ]; then
+                # Always opens new frame if working in command-line mode (without X).
+                args="-t $args"
+            else
+                # Don't wait if working under X.
+                args="-n  $args"
+            fi
+        elif [ "$ARCH" = 'Darwin' ]; then
+            args="-n"
+        fi
+    fi
+
+    _is_emacs_window_exist || args="$args -c"
+
+    $EMACSCLIENT $args -u "$@"
+    if [ $? -eq 0 ]; then
+        _raise_emacs
+    fi
+}
+
+main "$@"
+      EOS
+
+
+
     else
       if build.with? "x11"
         # These libs are not specified in xft's .pc. See:
@@ -345,17 +371,6 @@ class EmacsPlus < Formula
         brew linkapps
       or:
         ln -s #{prefix}/Emacs.app /Applications
-
-      --natural-title-bar option was removed from this formula, in order to
-        duplicate its effect add following line to your init.el file
-        (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-        (add-to-list 'default-frame-alist '(ns-appearance . dark))
-      or:
-        (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-        (add-to-list 'default-frame-alist '(ns-appearance . light))
-
-      If you are using macOS Mojave, please note that most of the experimental
-      options are forbidden on Mojave. This is temporary decision.
 
     EOS
   end
