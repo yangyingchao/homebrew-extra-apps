@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AMApplicationBuild</key>
+	<string>444.7</string>
+	<key>AMApplicationVersion</key>
+	<string>2.8</string>
+	<key>AMDocumentVersion</key>
+	<string>2</string>
+	<key>actions</key>
+	<array>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<true/>
+					<key>Types</key>
+					<array>
+						<string>com.apple.cocoa.string</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>2.0.3</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>COMMAND_STRING</key>
+					<dict/>
+					<key>CheckedForUserDefaultShell</key>
+					<dict/>
+					<key>inputMethod</key>
+					<dict/>
+					<key>shell</key>
+					<dict/>
+					<key>source</key>
+					<dict/>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.cocoa.string</string>
+					</array>
+				</dict>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Run Shell Script.action</string>
+				<key>ActionName</key>
+				<string>Run Shell Script</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>COMMAND_STRING</key>
+					<string>#!/bin/bash
+#
+# Author: Yang,Ying-chao &lt;yangyingchao@gmail.com&gt;, 2016-09-18
+#
+
+EMACS=/usr/local/bin/emacs
+EMACSCLIENT=/usr/local/bin/emacsclient
+
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export LC_CTYPE=zh_CN.UTF-8
+export LC_ALL=
+
+ARCH=`uname`
+
+
+if [ ! -f $EMACS ]; then
+    echo "Can't find proper executable emacs..."
+    exit 1
+fi
+
+_is_emacs_daemon_started () {
+echo "A"
+    netstat -nl 2&gt; /dev/null | awk '{print $NF}' | grep -q "emacs.*server"
+}
+
+_is_emacs_window_exist () {
+    _is_emacs_daemon_started &amp;&amp; \
+        $EMACSCLIENT -e '(&lt;= 2 (length (visible-frame-list)))' | grep -q -x t
+}
+
+_raise_emacs() {
+    if [ $ARCH = 'Linux' ]; then
+        which wmctrl &gt; /dev/null 2&gt;&amp;1 &amp;&amp; wmctrl -xa "emacs.Emacs"
+    elif [ $ARCH = 'Darwin' ]; then
+        osascript -e 'tell application "Emacs" to activate'
+    else
+        echo "Unsupported platform"
+    fi
+}
+
+start_emacs ()
+{
+    $EMACS --daemon &amp;
+    return $?
+}
+
+main () {
+    _is_emacs_daemon_started
+    if [ $? -ne 0 ] ; then
+        start_emacs
+        if [ $? -eq 0 ]; then
+            echo ' [sucess]'
+        else
+            echo ' [faild]'
+            return 1
+        fi
+    fi
+
+    while [ 1 ]; do
+        _is_emacs_daemon_started
+        if [ $? -ne 0 ]; then
+            echo "Waiting emacs to be started..."
+            sleep 1
+        else
+            break
+        fi
+    done
+
+    # Simply return if --daemon is set. This is only used by systemd.
+    if [ "$1" = "--daemon" ]; then
+        return 0
+    fi
+
+    # Get arguments passed to emacsclient.
+    local args=""
+    while getopts tnc var; do
+        case $var in
+            t)
+                args="-t";;
+            n)
+                args="-n";;
+            c)
+                args="-c";;
+            *)
+                printf "Usage: %s [-t/-n] [-c] file:line" $0
+            ;;
+        esac
+    done
+    shift $(($OPTIND - 1))
+
+    if [ -z "$args" ]; then
+        if [ "$ARCH" = 'Linux' ]; then
+            if [ -z $DISPLAY ]; then
+                # Always opens new frame if working in command-line mode (without X).
+                args="-t $args"
+            else
+                # Don't wait if working under X.
+                args="-n  $args"
+            fi
+        elif [ "$ARCH" = 'Darwin' ]; then
+            args="-n"
+        fi
+    fi
+
+    _is_emacs_window_exist || args="$args -c"
+
+    $EMACSCLIENT $args -u "$@"
+    if [ $? -eq 0 ]; then
+        _raise_emacs
+    fi
+}
+
+main "$@"
+</string>
+					<key>CheckedForUserDefaultShell</key>
+					<true/>
+					<key>inputMethod</key>
+					<integer>1</integer>
+					<key>shell</key>
+					<string>/bin/bash</string>
+					<key>source</key>
+					<string></string>
+				</dict>
+				<key>BundleIdentifier</key>
+				<string>com.apple.RunShellScript</string>
+				<key>CFBundleVersion</key>
+				<string>2.0.3</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>RunShellScriptAction</string>
+				<key>InputUUID</key>
+				<string>AE1A1258-DDB9-4957-B5D1-421DCE70739F</string>
+				<key>Keywords</key>
+				<array>
+					<string>Shell</string>
+					<string>Script</string>
+					<string>Command</string>
+					<string>Run</string>
+					<string>Unix</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>175D5077-8F39-4DFE-96A3-A5B9FB56202A</string>
+				<key>UUID</key>
+				<string>6C0FB471-CAED-4CD1-BC05-F6AC4847B2B8</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<integer>0</integer>
+						<key>name</key>
+						<string>inputMethod</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+					<key>1</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>1</string>
+					</dict>
+					<key>2</key>
+					<dict>
+						<key>default value</key>
+						<false/>
+						<key>name</key>
+						<string>CheckedForUserDefaultShell</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>2</string>
+					</dict>
+					<key>3</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>COMMAND_STRING</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>3</string>
+					</dict>
+					<key>4</key>
+					<dict>
+						<key>default value</key>
+						<string>/bin/sh</string>
+						<key>name</key>
+						<string>shell</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>4</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<true/>
+				<key>location</key>
+				<string>301.500000:671.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/English.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<true/>
+		</dict>
+	</array>
+	<key>connectors</key>
+	<dict/>
+	<key>workflowMetaData</key>
+	<dict>
+		<key>workflowTypeIdentifier</key>
+		<string>com.apple.Automator.application</string>
+	</dict>
+</dict>
+</plist>
