@@ -7,6 +7,19 @@ class EmacsCommon < Formula
   sha256 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   version "1.0"
 
+  depends_on "autoconf" => :build
+  depends_on "gnu-sed" => :build
+  depends_on "texinfo" => :build
+  depends_on "pkg-config" => :build
+  depends_on "librsvg"
+  depends_on "gnutls"
+  depends_on "little-cms2"
+  depends_on "imagemagick@7"
+  depends_on "jansson"
+
+
+
+
   def install
     (bin/"run-emacs").write <<~EOS
 #!/bin/bash

@@ -2,24 +2,12 @@ class Emacs28 < Formula
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
   url "https://github.com/emacs-mirror/emacs.git", :branch => "feature/native-comp"
-  # head "git://git.sv.gnu.org/emacs.git", :branch => "emacs-27"
   version "28"
 
   depends_on "emacs-common"
 
-  depends_on "autoconf" => :build
-  depends_on "gnu-sed" => :build
-  depends_on "texinfo" => :build
-  depends_on "pkg-config" => :build
-  depends_on "gnutls"
-  depends_on "little-cms2"
-  depends_on "imagemagick@7"
-  depends_on "jansson"
-
-
   def install
     args = %W[
-      --disable-dependency-tracking
       --disable-silent-rules
       --enable-locallisppath=#{HOMEBREW_PREFIX}/share/emacs/site-lisp
       --infodir=#{info}/emacs
@@ -51,7 +39,7 @@ class Emacs28 < Formula
 
     system "./autogen.sh"
 
-    system "./configure", *args
+    system "export CC=/usr/bin/clang; export CXX=/usr/bin/clang++;./configure", *args
     system "make"
     system "make", "install"
 

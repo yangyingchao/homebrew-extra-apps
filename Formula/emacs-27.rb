@@ -7,16 +7,6 @@ class Emacs27 < Formula
 
   depends_on "emacs-common"
 
-  depends_on "autoconf" => :build
-  depends_on "gnu-sed" => :build
-  depends_on "texinfo" => :build
-  depends_on "pkg-config" => :build
-  depends_on "gnutls"
-  depends_on "little-cms2"
-  depends_on "imagemagick@7"
-  depends_on "jansson"
-
-
   def install
     args = %W[
       --disable-dependency-tracking
