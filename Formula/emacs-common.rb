@@ -40,7 +40,7 @@ if [ ! -f $EMACS ]; then
 fi
 
 _is_emacs_daemon_started () {
-    netstat -nl 2> /dev/null | awk '{print $NF}' | grep -q "emacs.*server"
+    netstat -nl 2> /dev/null | awk '{print $NF}'  | grep "emacs.*server" | grep -q "$UID"
 }
 
 _is_emacs_window_exist () {
